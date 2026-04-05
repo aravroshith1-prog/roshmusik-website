@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ROSHMUSIK – Born to Resonate</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Rajdhani:wght@300;400;600;700&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #8a6e2f;
+    --black: #000000;
+    --dark: #0a0a0a;
+    --white: #f5f0e8;
+    --gray: rgba(255,255,255,0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: var(--black); color: var(--white); font-family: 'Montserrat', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 48px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+    transition: background 0.4s;
+  }
+  nav.scrolled { background: rgba(0,0,0,0.96); backdrop-filter: blur(10px); }
+
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; letter-spacing: 6px; color: var(--gold); text-decoration: none; text-transform: uppercase; }
+
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--white); text-decoration: none; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-social { display: flex; gap: 18px; align-items: center; }
+  .nav-social a { color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.3s; }
+  .nav-social a:hover { color: var(--gold); }
+  .nav-social svg { display: block; }
+
+  /* HERO */
+  .hero { position: relative; width: 100%; height: 100vh; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; }
+
+  /* YouTube video background */
+  .hero-video-wrap {
+    position: absolute; inset: 0; z-index: 1; overflow: hidden;
+    background: #000;
+  }
+
+  #yt-thumb { transition: opacity 1.5s ease; }
+
+  #yt-player {
+    position: absolute;
+    /* Fill and center — always covers the viewport regardless of aspect ratio */
+    width: 100vw;
+    height: 56.25vw;   /* 16:9 based on width */
+    min-height: 100vh;
+    min-width: 177.78vh; /* 16:9 based on height */
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    border: none;
+    display: block;
+  }
+
+  /* Dark overlay on top of video */
+  .hero-video-overlay {
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background:
+      linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.5) 100%),
+      linear-gradient(to right, rgba(0,0,0,0.4) 0%, transparent 60%);
+  }
+
+  /* Gold tint overlay */
+  .hero-video-tint {
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background: rgba(201,168,76,0.04);
+    mix-blend-mode: color;
+  }
+
+  /* Fallback bg shown while video loads */
+  .hero-bg-fallback {
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse at 30% 60%, rgba(201,168,76,0.10) 0%, transparent 60%),
+                linear-gradient(135deg, #000 0%, #0d0d00 60%, #0a0800 100%);
+  }
+
+  .hero-grain {
+    position: absolute; inset: 0; z-index: 3; opacity: 0.035; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  /* Mute toggle button */
+  .mute-btn {
+    position: absolute; top: 90px; right: 32px; z-index: 10;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(0,0,0,0.5); border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold); font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; backdrop-filter: blur(6px);
+    animation: fadeIn 2s ease forwards 2s; opacity: 0;
+  }
+  .mute-btn:hover { background: rgba(201,168,76,0.15); border-color: var(--gold); }
+
+  /* Video loading indicator */
+  .video-loading {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 12px;
+    transition: opacity 0.8s;
+  }
+  .video-loading.hidden { opacity: 0; pointer-events: none; }
+  .vl-ring {
+    width: 36px; height: 36px; border: 2px solid rgba(201,168,76,0.2);
+    border-top-color: var(--gold); border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .vl-text { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; }
+
+  .orb { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 2; animation: orbPulse 6s ease-in-out infinite alternate; pointer-events: none; }
+  .orb-1 { width: 500px; height: 500px; background: rgba(201,168,76,0.08); top: 0%; left: -10%; animation-delay: 0s; }
+  .orb-2 { width: 350px; height: 350px; background: rgba(201,168,76,0.05); bottom: 15%; right: 0%; animation-delay: 2.5s; }
+
+  @keyframes orbPulse { from { transform: scale(1); opacity: 0.5; } to { transform: scale(1.25); opacity: 0.9; } }
+
+  .hero-monogram {
+    position: absolute; font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(180px, 28vw, 380px); font-weight: 700;
+    color: transparent; -webkit-text-stroke: 1px rgba(201,168,76,0.07);
+    letter-spacing: -10px; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); z-index: 3;
+    white-space: nowrap; user-select: none;
+    animation: fadeMonogram 2.5s ease forwards 0.5s; opacity: 0;
+  }
+  @keyframes fadeMonogram { to { opacity: 1; } }
+
+  /* Soundwave */
+  .soundwave { position: absolute; bottom: 170px; left: 50%; transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 3px; }
+  .wave-bar { width: 2px; background: var(--gold); border-radius: 2px; animation: waveAnim 1.3s ease-in-out infinite alternate; opacity: 0.55; }
+  .wave-bar:nth-child(1)  { height: 6px;  animation-delay: 0.0s; }
+  .wave-bar:nth-child(2)  { height: 14px; animation-delay: 0.1s; }
+  .wave-bar:nth-child(3)  { height: 24px; animation-delay: 0.2s; }
+  .wave-bar:nth-child(4)  { height: 34px; animation-delay: 0.3s; }
+  .wave-bar:nth-child(5)  { height: 44px; animation-delay: 0.15s; }
+  .wave-bar:nth-child(6)  { height: 56px; animation-delay: 0.05s; }
+  .wave-bar:nth-child(7)  { height: 44px; animation-delay: 0.25s; }
+  .wave-bar:nth-child(8)  { height: 56px; animation-delay: 0.35s; }
+  .wave-bar:nth-child(9)  { height: 44px; animation-delay: 0.1s; }
+  .wave-bar:nth-child(10) { height: 30px; animation-delay: 0.2s; }
+  .wave-bar:nth-child(11) { height: 18px; animation-delay: 0.3s; }
+  .wave-bar:nth-child(12) { height: 8px;  animation-delay: 0.4s; }
+  @keyframes waveAnim { from { transform: scaleY(0.3); } to { transform: scaleY(1.5); } }
+
+  /* Hero content */
+  .hero-content { position: relative; z-index: 5; text-align: center; padding-bottom: 90px; animation: riseUp 1.6s cubic-bezier(0.16,1,0.3,1) forwards 0.3s; opacity: 0; transform: translateY(40px); }
+  @keyframes riseUp { to { opacity: 1; transform: translateY(0); } }
+
+  .hero-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 6vw, 72px); font-weight: 300; letter-spacing: 4px; text-transform: none; color: var(--white); line-height: 1.2; margin-bottom: 8px; }
+  .hero-sub { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 300; letter-spacing: 5px; color: rgba(201,168,76,0.65); text-transform: uppercase; margin-bottom: 36px; }
+
+  .btn { display: inline-block; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; padding: 14px 44px; text-decoration: none; transition: all 0.3s; position: relative; overflow: hidden; cursor: pointer; border: none; }
+  .btn-gold { color: var(--black); background: var(--gold); }
+  .btn-gold::before { content: ''; position: absolute; inset: 0; background: var(--gold-light); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+  .btn-gold:hover::before { transform: scaleX(1); }
+  .btn-gold span { position: relative; z-index: 1; }
+  .btn-outline { color: var(--gold); background: transparent; border: 1px solid rgba(201,168,76,0.5); }
+  .btn-outline:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+
+  .scroll-hint { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 5; animation: fadeIn 2s ease forwards 2s; opacity: 0; }
+  @keyframes fadeIn { to { opacity: 0.4; } }
+  .scroll-line { width: 1px; height: 44px; background: linear-gradient(to bottom, var(--gold), transparent); margin: 0 auto; animation: scrollPulse 2.2s ease-in-out infinite; }
+  @keyframes scrollPulse { 0%,100% { opacity:0.3; transform: scaleY(0.8); } 50% { opacity:1; transform: scaleY(1.2); } }
+
+  /* SECTION */
+  .section { padding: 100px 60px; position: relative; overflow: hidden; }
+  .section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--gold-dim), transparent); }
+  .section-dark { background: var(--dark); }
+  .section-black { background: var(--black); }
+
+  .section-eyebrow { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 8px; text-transform: uppercase; color: var(--gold); text-align: center; margin-bottom: 16px; }
+  .gold-line { width: 60px; height: 1px; background: linear-gradient(to right, var(--gold), transparent); margin: 0 auto 60px; }
+
+  /* TRACKS GRID */
+  .tracks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2px; max-width: 1000px; margin: 0 auto 60px; }
+  .track-card { position: relative; aspect-ratio: 1; background: #0f0f0f; overflow: hidden; cursor: pointer; }
+  .track-card-bg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 80px; color: rgba(201,168,76,0.10); font-weight: 700; transition: transform 0.5s; }
+  .track-card:hover .track-card-bg { transform: scale(1.1); }
+  .track-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 65%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; text-align: left; transition: background 0.3s; }
+  .track-card:hover .track-card-overlay { background: linear-gradient(to top, rgba(201,168,76,0.18) 0%, transparent 65%); }
+  .track-lang { font-family: 'Rajdhani', sans-serif; font-size: 9px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
+  .track-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--white); letter-spacing: 1px; }
+  .track-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); width: 52px; height: 52px; border: 1px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; background: rgba(0,0,0,0.6); }
+  .track-card:hover .track-play { transform: translate(-50%,-50%) scale(1); }
+  .track-play svg { fill: var(--gold); margin-left: 4px; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; max-width: 900px; margin: 0 auto; }
+  .stat-box { padding: 40px 30px; text-align: center; background: #0a0a0a; }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+  .stat-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+
+  /* EMAIL */
+  .email-form { display: flex; align-items: center; justify-content: center; max-width: 440px; margin: 0 auto; }
+  .email-input { flex: 1; background: #111; border: 1px solid rgba(201,168,76,0.3); border-right: none; color: var(--white); font-family: 'Montserrat', sans-serif; font-size: 11px; letter-spacing: 2px; padding: 15px 20px; outline: none; transition: border-color 0.3s; }
+  .email-input::placeholder { color: rgba(255,255,255,0.25); font-size: 10px; letter-spacing: 2px; }
+  .email-input:focus { border-color: var(--gold); }
+  .email-btn { background: var(--gold); border: none; color: var(--black); font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 15px 26px; cursor: pointer; transition: background 0.3s; }
+  .email-btn:hover { background: var(--gold-light); }
+
+  /* FOOTER */
+  footer { background: var(--black); border-top: 1px solid rgba(201,168,76,0.12); padding: 40px 48px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; letter-spacing: 6px; color: var(--gold); text-transform: uppercase; }
+  .footer-tagline { font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 4px; color: rgba(255,255,255,0.25); text-transform: uppercase; margin-top: 4px; }
+  .footer-links { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+  .footer-links a { font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.3s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-social { display: flex; gap: 20px; align-items: center; }
+  .footer-social a { font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.3s; }
+  .footer-social a:hover { color: var(--gold); }
+
+  /* SURYA CHAT WIDGET */
+  #surya-bubble { position: fixed; bottom: 32px; right: 32px; z-index: 999; }
+  .surya-btn {
+    width: 58px; height: 58px; border-radius: 50%; background: var(--gold);
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--black);
+    box-shadow: 0 0 0 0 rgba(201,168,76,0.5);
+    animation: suryaPing 2.5s ease-in-out infinite;
+    transition: transform 0.2s;
+  }
+  .surya-btn:hover { transform: scale(1.08); }
+  @keyframes suryaPing { 0%,100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.5); } 50% { box-shadow: 0 0 0 14px rgba(201,168,76,0); } }
+
+  .surya-panel {
+    position: absolute; bottom: 70px; right: 0;
+    width: 340px; background: #0d0d0d;
+    border: 1px solid rgba(201,168,76,0.25);
+    display: none; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    animation: panelIn 0.3s cubic-bezier(0.16,1,0.3,1);
+    border-radius: 2px;
+  }
+  .surya-panel.open { display: flex; }
+  @keyframes panelIn { from { opacity:0; transform: translateY(16px) scale(0.97); } to { opacity:1; transform: none; } }
+
+  .surya-header { padding: 16px 20px; border-bottom: 1px solid rgba(201,168,76,0.15); display: flex; align-items: center; gap: 12px; }
+  .surya-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 700; color: var(--black); flex-shrink: 0; }
+  .surya-name-label { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
+  .surya-status { font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-transform: uppercase; }
+
+  .surya-msgs { flex: 1; min-height: 220px; max-height: 280px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .surya-msgs::-webkit-scrollbar { width: 3px; }
+  .surya-msgs::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); }
+  .smsg { padding: 10px 14px; font-family: 'Montserrat', sans-serif; font-size: 11px; line-height: 1.6; color: rgba(255,255,255,0.85); border-radius: 2px; max-width: 88%; }
+  .smsg.agent { background: #181408; border: 1px solid rgba(201,168,76,0.15); align-self: flex-start; }
+  .smsg.user { background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.25); align-self: flex-end; color: var(--white); }
+  .smsg.typing { color: rgba(201,168,76,0.6); font-style: italic; }
+
+  .surya-quick { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 12px; }
+  .sq-btn { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); background: transparent; border: 1px solid rgba(201,168,76,0.3); padding: 6px 12px; cursor: pointer; transition: all 0.2s; border-radius: 1px; }
+  .sq-btn:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+
+  .surya-input-row { display: flex; border-top: 1px solid rgba(201,168,76,0.15); }
+  .surya-input { flex: 1; background: transparent; border: none; color: var(--white); font-family: 'Montserrat', sans-serif; font-size: 11px; padding: 14px 16px; outline: none; letter-spacing: 1px; }
+  .surya-input::placeholder { color: rgba(255,255,255,0.2); }
+  .surya-send { background: transparent; border: none; border-left: 1px solid rgba(201,168,76,0.15); color: var(--gold); font-size: 18px; padding: 0 18px; cursor: pointer; transition: background 0.2s; }
+  .surya-send:hover { background: rgba(201,168,76,0.08); }
+
+  @media (max-width: 768px) {
+    nav { padding: 18px 20px; }
+    .nav-links { display: none; }
+    .section { padding: 70px 24px; }
+    footer { flex-direction: column; align-items: flex-start; padding: 32px 24px; }
+    .surya-panel { width: 300px; right: -10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#" class="nav-logo">Roshmusik</a>
+  <ul class="nav-links">
+    <li><a href="#music">Music</a></li>
+    <li><a href="#videos">Videos</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="https://ko-fi.com/roshmusikstudios" target="_blank">Support</a></li>
+  </ul>
+  <div class="nav-social">
+    <a href="https://instagram.com/roshmusikofficial" target="_blank" title="Instagram">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+    </a>
+    <a href="https://youtube.com/@Roshmusik" target="_blank" title="YouTube">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+    </a>
+    <a href="https://open.spotify.com/artist/66GvSYuJ8ks3iouoFicDo7" target="_blank" title="Spotify">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+    </a>
+    <a href="https://linktr.ee/roshmusik" target="_blank" title="Linktree" style="font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700;">LINKS</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- Fallback bg while video loads -->
+  <div class="hero-bg-fallback"></div>
+
+  <!-- YouTube video background -->
+  <div class="hero-video-wrap" id="hero-video-wrap">
+    <!-- YouTube thumbnail shown immediately as background -->
+    <div id="yt-thumb" style="
+      position:absolute;inset:0;
+      background: url('https://img.youtube.com/vi/EHXX9NIdDMQ/maxresdefault.jpg') center/cover no-repeat;
+      z-index:1;
+    "></div>
+    <!-- iframe injected after first interaction -->
+    <iframe
+      id="yt-player"
+      src=""
+      data-src="https://www.youtube.com/embed/EHXX9NIdDMQ?autoplay=1&mute=1&loop=1&playlist=EHXX9NIdDMQ&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&cc_load_policy=0&start=2&enablejsapi=1&origin=https://roshmusik.com"
+      frameborder="0"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen
+      style="opacity:0;transition:opacity 1s;"
+    ></iframe>
+  </div>
+
+  <!-- Overlays -->
+  <div class="hero-video-overlay"></div>
+  <div class="hero-video-tint"></div>
+  <div class="hero-grain"></div>
+
+  <!-- Loading indicator -->
+  <div class="video-loading" id="video-loading">
+    <div class="vl-ring"></div>
+    <div class="vl-text">Loading</div>
+  </div>
+
+  <!-- Gold orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Mute toggle -->
+  <button class="mute-btn" id="mute-btn" onclick="toggleMute()" title="Toggle sound">🔇</button>
+
+  <!-- Soundwave -->
+  <div class="soundwave" style="z-index:5;">
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+  </div>
+
+  <!-- Hero content -->
+  <div class="hero-content" style="z-index:5;">
+    <p class="hero-label" id="hero-label">Latest Release</p>
+    <h1 class="hero-title" id="hero-title">നീർമാതളം കൊഴിഞ്ഞ സന്ധ്യ</h1>
+    <p class="hero-sub" id="hero-sub">Malayalam Romantic Sad Poem · Roshmusik Official</p>
+    <a href="https://linktr.ee/roshmusik" target="_blank" class="btn btn-gold"><span>Listen Now</span></a>
+  </div>
+  <div class="scroll-hint" style="z-index:5;"><div class="scroll-line"></div></div>
+</section>
+
+<!-- MUSIC -->
+<section class="section section-dark" id="music">
+  <p class="section-eyebrow">Discography</p>
+  <div class="gold-line"></div>
+  <div class="tracks-grid">
+    <div class="track-card">
+      <div class="track-card-bg">NS</div>
+      <div class="track-card-overlay"><p class="track-lang">Malayalam</p><p class="track-title">Neeyen Sakhi</p></div>
+      <div class="track-play"><svg width="12" height="14" viewBox="0 0 12 14"><path d="M1 1l10 6L1 13V1z"/></svg></div>
+    </div>
+    <div class="track-card">
+      <div class="track-card-bg" style="font-size:60px;">DV</div>
+      <div class="track-card-overlay"><p class="track-lang">English Indie</p><p class="track-title">DÉJÀ VU</p></div>
+      <div class="track-play"><svg width="12" height="14" viewBox="0 0 12 14"><path d="M1 1l10 6L1 13V1z"/></svg></div>
+    </div>
+    <div class="track-card">
+      <div class="track-card-bg" style="font-size:60px;">ES</div>
+      <div class="track-card-overlay"><p class="track-lang">Tamil</p><p class="track-title">En Swaasame</p></div>
+      <div class="track-play"><svg width="12" height="14" viewBox="0 0 12 14"><path d="M1 1l10 6L1 13V1z"/></svg></div>
+    </div>
+    <div class="track-card">
+      <div class="track-card-bg" style="font-size:46px;">OKK</div>
+      <div class="track-card-overlay"><p class="track-lang">Tamil</p><p class="track-title">Oru Kaadhal Kadhai</p></div>
+      <div class="track-play"><svg width="12" height="14" viewBox="0 0 12 14"><path d="M1 1l10 6L1 13V1z"/></svg></div>
+    </div>
+  </div>
+  <div style="text-align:center">
+    <a href="https://linktr.ee/roshmusik" target="_blank" class="btn btn-outline">View All Music</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="section section-black" id="about">
+  <p class="section-eyebrow">By The Numbers</p>
+  <div class="gold-line"></div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num">10.4K</div><div class="stat-label">YouTube Subscribers</div></div>
+    <div class="stat-box"><div class="stat-num">7,965</div><div class="stat-label">Spotify Monthly Listeners</div></div>
+    <div class="stat-box"><div class="stat-num">43K+</div><div class="stat-label">Total Streams</div></div>
+    <div class="stat-box"><div class="stat-num">1M+</div><div class="stat-label">Instagram Views</div></div>
+  </div>
+</section>
+
+<!-- EMAIL -->
+<section class="section section-dark">
+  <p class="section-eyebrow">Stay Connected</p>
+  <div class="gold-line"></div>
+  <p style="text-align:center;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:32px;">Born to Resonate · New Releases · Exclusive Updates</p>
+  <div class="email-form">
+    <input type="email" class="email-input" placeholder="Enter your e-mail" />
+    <button class="email-btn">Subscribe</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">Roshmusik</div>
+    <div class="footer-tagline">Born to Resonate · Thrissur, Kerala</div>
+  </div>
+  <div class="footer-links">
+    <a href="https://roshmusik.bandcamp.com" target="_blank">Bandcamp</a>
+    <a href="https://ko-fi.com/roshmusikstudios" target="_blank">Ko-fi</a>
+    <a href="https://linktr.ee/roshmusik" target="_blank">Linktree</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">© Roshmusik Studios 2026</a>
+  </div>
+  <div class="footer-social">
+    <a href="https://instagram.com/roshmusikofficial" target="_blank">Instagram</a>
+    <a href="https://youtube.com/@Roshmusik" target="_blank">YouTube</a>
+    <a href="https://open.spotify.com/artist/66GvSYuJ8ks3iouoFicDo7" target="_blank">Spotify</a>
+  </div>
+</footer>
+
+<!-- SURYA CHAT WIDGET -->
+<div id="surya-bubble">
+  <div class="surya-panel" id="surya-panel">
+    <div class="surya-header">
+      <div class="surya-avatar">S</div>
+      <div>
+        <div class="surya-name-label">Surya</div>
+        <div class="surya-status">● Online · Roshmusik AI</div>
+      </div>
+    </div>
+    <div class="surya-msgs" id="surya-msgs">
+      <div class="smsg agent">Hey! I'm Surya — Roshmusik's AI. Ask me anything about the music, streams, or how to support the artist! 🎵</div>
+    </div>
+    <div class="surya-quick" id="surya-quick">
+      <button class="sq-btn" onclick="suryaSend('Latest release?')">Latest release?</button>
+      <button class="sq-btn" onclick="suryaSend('How to support?')">Support</button>
+      <button class="sq-btn" onclick="suryaSend('Where to stream?')">Stream</button>
+    </div>
+    <div class="surya-input-row">
+      <input class="surya-input" id="surya-input" placeholder="Ask Surya..." onkeydown="if(event.key==='Enter')suryaSend()" />
+      <button class="surya-send" onclick="suryaSend()">↑</button>
+    </div>
+  </div>
+  <button class="surya-btn" onclick="toggleSurya()">S</button>
+</div>
+
+<script>
+  // ── Nav scroll ────────────────────────────────────────────────
+  window.addEventListener('scroll', () => {
+    document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // ── YouTube Background Video ──────────────────────────────────
+  let isMuted = true;
+  let videoLoaded = false;
+
+  function loadVideo() {
+    if (videoLoaded) return;
+    videoLoaded = true;
+
+    const iframe  = document.getElementById('yt-player');
+    const thumb   = document.getElementById('yt-thumb');
+    const loader  = document.getElementById('video-loading');
+    const muteBtn = document.getElementById('mute-btn');
+
+    if (!iframe) return;
+
+    // Set the real src — browser now allows autoplay because user interacted
+    iframe.src = iframe.getAttribute('data-src');
+
+    iframe.addEventListener('load', () => {
+      // Fade in video, fade out thumbnail
+      iframe.style.opacity = '1';
+      setTimeout(() => {
+        if (thumb)   thumb.style.opacity = '0';
+        if (loader)  loader.classList.add('hidden');
+        if (muteBtn) { muteBtn.style.opacity = '1'; muteBtn.style.animation = 'none'; }
+      }, 1200);
+    });
+  }
+
+  // Trigger on any first interaction
+  ['mousemove','touchstart','scroll','keydown','click'].forEach(evt => {
+    window.addEventListener(evt, loadVideo, { once: true, passive: true });
+  });
+
+  // Also try after 3s regardless (handles autoplay-friendly browsers)
+  setTimeout(loadVideo, 3000);
+
+  function toggleMute() {
+    const iframe = document.getElementById('yt-player');
+    const btn    = document.getElementById('mute-btn');
+    if (!iframe || !videoLoaded) return;
+
+    if (isMuted) {
+      iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+      iframe.contentWindow.postMessage('{"event":"command","func":"setVolume","args":[70]}', '*');
+      isMuted = false;
+      if (btn) btn.textContent = '🔊';
+    } else {
+      iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+      isMuted = true;
+      if (btn) btn.textContent = '🔇';
+    }
+  }
+
+  // ── Surya Widget ──────────────────────────────────────────────
+  let suryaOpen = false;
+  let suryaHistory = [];
+
+  function toggleSurya() {
+    suryaOpen = !suryaOpen;
+    document.getElementById('surya-panel').classList.toggle('open', suryaOpen);
+  }
+
+  async function suryaSend(text) {
+    const input = document.getElementById('surya-input');
+    const msg   = text || input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    document.getElementById('surya-quick').style.display = 'none';
+
+    appendMsg(msg, 'user');
+    suryaHistory.push({ role: 'user', content: msg });
+
+    const typing = appendMsg('...', 'agent typing');
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 400,
+          system: `You are Surya, the AI music agent for Roshmusik Official — a Tamil/Malayalam indie artist from Thrissur, Kerala. You speak on behalf of the artist on their website. Be warm, concise, and helpful. Artist stats: 10,475 YouTube subs, 7,965 Spotify monthly listeners, 1M+ Instagram views on Neeyen Sakhi. Links: linktr.ee/roshmusik, ko-fi.com/roshmusikstudios, roshmusik.bandcamp.com. Tagline: Born to Resonate.`,
+          messages: suryaHistory
+        })
+      });
+      const data  = await res.json();
+      const reply = data.content?.[0]?.text || 'Sorry, I had trouble connecting. Try again!';
+      typing.remove();
+      appendMsg(reply, 'agent');
+      suryaHistory.push({ role: 'assistant', content: reply });
+    } catch(e) {
+      typing.remove();
+      appendMsg('Connection issue — please try again shortly!', 'agent');
+    }
+  }
+
+  function appendMsg(text, cls) {
+    const msgs = document.getElementById('surya-msgs');
+    const div  = document.createElement('div');
+    div.className  = 'smsg ' + cls;
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+  }
+</script>
+</body>
+</html>
