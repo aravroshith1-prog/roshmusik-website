@@ -509,17 +509,25 @@
   setTimeout(loadVideo, 3000);
 
   function toggleMute() {
-    const iframe = document.getElementById('yt-player');
-    const btn    = document.getElementById('mute-btn');
-    if (!iframe || !videoLoaded) return;
+    const btn = document.getElementById('mute-btn');
 
     if (isMuted) {
-      iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
-      iframe.contentWindow.postMessage('{"event":"command","func":"setVolume","args":[70]}', '*');
+      // Reload iframe WITHOUT mute=1 — this is the only reliable way to unmute
+      const iframe = document.getElementById('yt-player');
+      if (iframe) {
+        const src = iframe.src || iframe.getAttribute('data-src') || '';
+        // Replace mute=1 with mute=0 and reload
+        const newSrc = src.replace('mute=1', 'mute=0').replace('autoplay=1', 'autoplay=1');
+        iframe.src = newSrc;
+      }
       isMuted = false;
       if (btn) btn.textContent = '🔊';
     } else {
-      iframe.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+      const iframe = document.getElementById('yt-player');
+      if (iframe) {
+        const src = iframe.src || '';
+        iframe.src = src.replace('mute=0', 'mute=1');
+      }
       isMuted = true;
       if (btn) btn.textContent = '🔇';
     }
