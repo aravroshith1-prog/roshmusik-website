@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Surya — AI Music Agent | Roshmusik</title>
+<meta name="description" content="Surya — Roshmusik's AI music agent. Find real curators, get DM scripts, manage outreach."/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Rajdhani:wght@300;400;600;700&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #8a6e2f;
+    --black: #000000;
+    --dark: #0a0a0a;
+    --card: #0d0d0d;
+    --white: #f5f0e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; background: var(--black); color: var(--white); font-family: 'Montserrat', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(201,168,76,0.1); }
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; letter-spacing: 6px; color: var(--gold); text-decoration: none; text-transform: uppercase; }
+  .nav-back { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.3s; }
+  .nav-back:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero { padding: 120px 48px 60px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.07) 0%, transparent 70%); pointer-events: none; }
+  .hero-eyebrow { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 8px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; animation: fadeUp 0.8s ease forwards; opacity: 0; }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(48px, 8vw, 96px); font-weight: 300; color: var(--white); letter-spacing: 2px; line-height: 1; margin-bottom: 16px; animation: fadeUp 0.8s ease forwards 0.1s; opacity: 0; }
+  .hero-title span { color: var(--gold); }
+  .hero-sub { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 300; letter-spacing: 4px; color: rgba(255,255,255,0.35); text-transform: uppercase; animation: fadeUp 0.8s ease forwards 0.2s; opacity: 0; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* TABS */
+  .tabs-wrap { display: flex; justify-content: center; gap: 0; padding: 0 48px; margin-bottom: 40px; border-bottom: 1px solid rgba(201,168,76,0.1); }
+  .tab-btn { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.35); background: transparent; border: none; padding: 16px 28px; cursor: pointer; transition: all 0.3s; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab-btn:hover { color: rgba(255,255,255,0.7); }
+  .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* CONTAINER */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 32px 80px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SEARCH BAR */
+  .search-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .search-bar input { flex: 1; min-width: 200px; background: #111; border: 1px solid rgba(201,168,76,0.15); color: var(--white); font-family: 'Montserrat', sans-serif; font-size: 12px; letter-spacing: 1px; padding: 13px 18px; outline: none; transition: border-color 0.3s; }
+  .search-bar input:focus { border-color: var(--gold); }
+  .search-bar select { background: #111; border: 1px solid rgba(201,168,76,0.15); color: var(--white); font-family: 'Montserrat', sans-serif; font-size: 11px; padding: 13px 14px; outline: none; cursor: pointer; }
+  .btn-gold { background: var(--gold); color: var(--black); border: none; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 13px 28px; cursor: pointer; transition: background 0.3s; white-space: nowrap; }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-gold:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-outline { background: transparent; color: var(--gold); border: 1px solid rgba(201,168,76,0.4); font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; padding: 10px 20px; cursor: pointer; transition: all 0.2s; }
+  .btn-outline:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+
+  /* STATUS */
+  .status { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 3px; color: rgba(201,168,76,0.5); text-transform: uppercase; margin: 10px 0 16px; min-height: 14px; }
+  .spinner { display: inline-block; width: 12px; height: 12px; border: 1.5px solid rgba(201,168,76,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* CURATOR CARDS */
+  .curator-grid { display: flex; flex-direction: column; gap: 1px; }
+  .curator-card { background: var(--card); border-left: 2px solid transparent; padding: 22px 26px; transition: all 0.3s; cursor: default; }
+  .curator-card:hover { border-left-color: var(--gold); background: #111; }
+  .curator-top { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 12px; }
+  .curator-avatar { width: 46px; height: 46px; border-radius: 50%; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 700; color: var(--gold); flex-shrink: 0; }
+  .curator-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--white); letter-spacing: 1px; line-height: 1.2; }
+  .curator-handle { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 3px; color: rgba(201,168,76,0.55); text-transform: uppercase; margin-top: 3px; }
+  .curator-meta { font-family: 'Montserrat', sans-serif; font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+  .curator-desc { font-family: 'Montserrat', sans-serif; font-size: 11px; line-height: 1.75; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+  .curator-why { font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 1px; color: rgba(201,168,76,0.45); margin-bottom: 14px; }
+  .platform-tag { display: inline-block; font-family: 'Rajdhani', sans-serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; border: 1px solid rgba(201,168,76,0.2); color: rgba(201,168,76,0.5); margin-right: 6px; }
+  .curator-actions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.04); }
+  .act-btn { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; padding: 8px 16px; border: 1px solid rgba(201,168,76,0.25); color: rgba(201,168,76,0.7); background: transparent; cursor: pointer; transition: all 0.2s; }
+  .act-btn:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); color: var(--gold); }
+  .act-btn.primary { background: var(--gold); color: var(--black); border-color: var(--gold); }
+  .act-btn.primary:hover { background: var(--gold-light); }
+
+  /* DM BOX */
+  .dm-box { margin-top: 14px; padding: 18px 20px; background: rgba(201,168,76,0.03); border: 1px solid rgba(201,168,76,0.08); display: none; }
+  .dm-box.open { display: block; animation: fadeUp 0.3s ease; }
+  .dm-label { font-family: 'Rajdhani', sans-serif; font-size: 9px; letter-spacing: 4px; color: rgba(201,168,76,0.3); text-transform: uppercase; margin-bottom: 10px; }
+  .dm-text { font-family: 'Montserrat', sans-serif; font-size: 12px; line-height: 1.9; color: rgba(255,255,255,0.7); white-space: pre-wrap; }
+  .dm-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 70px 20px; }
+  .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: rgba(255,255,255,0.15); margin-bottom: 8px; }
+  .empty-sub { font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.1); text-transform: uppercase; }
+
+  /* GOLD LINE */
+  .gold-line { width: 40px; height: 1px; background: linear-gradient(to right, var(--gold), transparent); margin: 0 auto 32px; }
+
+  /* SECTION LABEL */
+  .section-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+
+  /* PLATFORMS GRID */
+  .platforms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; margin-bottom: 40px; }
+  .platform-card { background: var(--card); padding: 24px 28px; border-left: 2px solid rgba(201,168,76,0.1); transition: all 0.3s; }
+  .platform-card:hover { border-left-color: var(--gold); }
+  .platform-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+  .platform-desc { font-family: 'Montserrat', sans-serif; font-size: 10px; line-height: 1.7; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
+  .platform-badge { display: inline-block; font-family: 'Rajdhani', sans-serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; border: 1px solid rgba(201,168,76,0.2); color: rgba(201,168,76,0.5); margin-bottom: 14px; }
+  .platform-link { display: inline-block; font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(201,168,76,0.3); padding-bottom: 2px; transition: border-color 0.3s; }
+  .platform-link:hover { border-color: var(--gold); }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 28px; right: 28px; background: var(--gold); color: var(--black); font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 12px 22px; display: none; z-index: 200; animation: fadeUp 0.3s ease; }
+
+  /* FOOTER ACTIONS */
+  .footer-actions { display: flex; gap: 10px; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(201,168,76,0.08); flex-wrap: wrap; }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 100px 20px 40px; }
+    .tabs-wrap { padding: 0; overflow-x: auto; }
+    .container { padding: 0 16px 60px; }
+    .search-bar { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Roshmusik</a>
+  <a href="/" class="nav-back">← Back to site</a>
+</nav>
+
+<div class="hero">
+  <p class="hero-eyebrow">AI Music Agent</p>
+  <h1 class="hero-title"><span>Surya</span></h1>
+  <p class="hero-sub">Find curators · DM scripts · Submit music · Outreach</p>
+</div>
+
+<div class="tabs-wrap">
+  <button class="tab-btn active" onclick="switchTab('curators')">Find Curators</button>
+  <button class="tab-btn" onclick="switchTab('submit')">Submit Music</button>
+  <button class="tab-btn" onclick="switchTab('chat')">Chat with Surya</button>
+</div>
+
+<div class="container">
+
+  <!-- TAB 1: FIND CURATORS -->
+  <div class="tab-panel active" id="tab-curators">
+    <div class="search-bar">
+      <input type="text" id="q" value="Tamil indie music curator" placeholder="Search curators..." />
+      <select id="platform">
+        <option value="instagram">Instagram</option>
+        <option value="youtube">YouTube</option>
+        <option value="both">Both</option>
+      </select>
+      <select id="lang">
+        <option value="Tamil">Tamil</option>
+        <option value="Malayalam">Malayalam</option>
+        <option value="Tamil and Malayalam">Tamil + Malayalam</option>
+        <option value="South Indian">South Indian</option>
+      </select>
+      <button class="btn-gold" id="find-btn" onclick="findCurators()">Find Curators</button>
+    </div>
+    <div class="status" id="find-status"></div>
+    <div class="curator-grid" id="curator-grid">
+      <div class="empty-state">
+        <div class="empty-title">Search for curators</div>
+        <div class="empty-sub">Real Instagram & YouTube profiles with DM scripts</div>
+      </div>
+    </div>
+    <div class="footer-actions" id="curator-footer" style="display:none;">
+      <button class="btn-outline" onclick="copyAllDMs()">Copy All DM Scripts</button>
+      <button class="btn-outline" onclick="findCurators()">Find More</button>
+    </div>
+  </div>
+
+  <!-- TAB 2: SUBMIT MUSIC -->
+  <div class="tab-panel" id="tab-submit">
+    <p class="section-label">Free submission platforms</p>
+    <div class="gold-line"></div>
+    <div class="platforms-grid">
+      <div class="platform-card">
+        <div class="platform-name">SubmitHub</div>
+        <span class="platform-badge">Free + Paid</span>
+        <div class="platform-desc">Submit to 100s of blogs, Spotify playlists, YouTube channels and indie labels. Free standard credits available.</div>
+        <a href="https://www.submithub.com" target="_blank" class="platform-link">Open SubmitHub →</a>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">Groover</div>
+        <span class="platform-badge">Paid — €2-4/curator</span>
+        <div class="platform-desc">Guaranteed listen + feedback within 7 days from real curators, labels, blogs and playlist managers.</div>
+        <a href="https://groover.co" target="_blank" class="platform-link">Open Groover →</a>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">Indiemono</div>
+        <span class="platform-badge">100% Free</span>
+        <div class="platform-desc">100+ active Spotify playlists across all subgenres. Submit directly, completely free. Human curation.</div>
+        <a href="https://indiemono.com" target="_blank" class="platform-link">Open Indiemono →</a>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">Spotify for Artists</div>
+        <span class="platform-badge">Free</span>
+        <div class="platform-desc">Pitch your unreleased music directly to Spotify's editorial team for potential playlist placement.</div>
+        <a href="https://artists.spotify.com" target="_blank" class="platform-link">Open Spotify for Artists →</a>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">One Submit</div>
+        <span class="platform-badge">Paid</span>
+        <div class="platform-desc">Reach 2,200+ curators with one submission — blogs, TikTok influencers, YouTube channels, online radio.</div>
+        <a href="https://www.one-submit.com" target="_blank" class="platform-link">Open One Submit →</a>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">MusoSoup</div>
+        <span class="platform-badge">Paid</span>
+        <div class="platform-desc">UK-based platform connecting indie artists with music blogs, playlist curators and online magazines worldwide.</div>
+        <a href="https://musosoup.com" target="_blank" class="platform-link">Open MusoSoup →</a>
+      </div>
+    </div>
+
+    <p class="section-label" style="margin-top:40px;">Tamil & Malayalam specific playlists</p>
+    <div class="gold-line"></div>
+    <div class="platforms-grid">
+      <div class="platform-card">
+        <div class="platform-name">Tamil Indie</div>
+        <span class="platform-badge">80.5K Saves — Spotify Editorial</span>
+        <div class="platform-desc">Official Spotify editorial playlist for Tamil indie music. Submit via Spotify for Artists before release.</div>
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DWVPZhZJQP9HE" target="_blank" class="platform-link">Open Playlist →</a>
+      </div>
+      <div class="platform-card">
+        <div class="platform-name">Latest Malayalam</div>
+        <span class="platform-badge">219K Saves — Spotify Editorial</span>
+        <div class="platform-desc">Official Spotify editorial playlist for latest Malayalam music. Submit via Spotify for Artists.</div>
+        <a href="https://open.spotify.com/playlist/37i9dQZF1DWSxEc2RjBCQv" target="_blank" class="platform-link">Open Playlist →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: CHAT WITH SURYA -->
+  <div class="tab-panel" id="tab-chat">
+    <div style="max-width:600px;margin:0 auto;">
+      <div id="chat-msgs" style="display:flex;flex-direction:column;gap:12px;min-height:300px;margin-bottom:20px;">
+        <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.12);padding:16px 18px;align-self:flex-start;max-width:85%;">
+          <p style="font-family:'Montserrat',sans-serif;font-size:12px;line-height:1.8;color:rgba(255,255,255,0.75);">Hey! I'm Surya — Roshmusik's AI music agent. Ask me anything about the music, how to promote it, streaming stats, or how to support the artist! 🎵</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:0;border:1px solid rgba(201,168,76,0.2);">
+        <input type="text" id="chat-input" placeholder="Ask Surya anything..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1;background:#0d0d0d;border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:12px;padding:14px 18px;outline:none;letter-spacing:1px;" />
+        <button onclick="sendChat()" style="background:var(--gold);border:none;color:var(--black);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:0 22px;cursor:pointer;transition:background 0.3s;" onmouseover="this.style.background='#e8c97a'" onmouseout="this.style.background='#c9a84c'">Send</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+        <button class="act-btn" onclick="quickChat('Latest release?')">Latest release?</button>
+        <button class="act-btn" onclick="quickChat('Where to stream?')">Stream</button>
+        <button class="act-btn" onclick="quickChat('How to support Roshmusik?')">Support</button>
+        <button class="act-btn" onclick="quickChat('Spotify stats?')">Spotify stats</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const WORKER = 'https://polished-shadow-6284surya-proxy.rosh-musik.workers.dev';
+  let curators = [];
+  let chatHistory = [];
+
+  // ── Tabs ──────────────────────────────────────────────────
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => {
+      b.classList.toggle('active', ['curators','submit','chat'][i] === tab);
+    });
+    document.querySelectorAll('.tab-panel').forEach((p,i) => {
+      p.classList.toggle('active', ['tab-curators','tab-submit','tab-chat'][i] === 'tab-'+tab);
+    });
+  }
+
+  // ── Toast ─────────────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2000);
+  }
+
+  // ── Find Curators ─────────────────────────────────────────
+  async function findCurators() {
+    const q        = document.getElementById('q').value.trim();
+    const platform = document.getElementById('platform').value;
+    const lang     = document.getElementById('lang').value;
+    if (!q) return;
+
+    const btn  = document.getElementById('find-btn');
+    const stat = document.getElementById('find-status');
+    const grid = document.getElementById('curator-grid');
+
+    btn.disabled = true;
+    stat.innerHTML = '<span class="spinner"></span> Surya is searching...';
+    grid.innerHTML = '';
+    document.getElementById('curator-footer').style.display = 'none';
+
+    try {
+      const res = await fetch(WORKER + '/curators', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q, platform, lang })
+      });
+
+      if (!res.ok) throw new Error('Worker error: ' + res.status);
+
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || 'Could not find curators.');
+
+      curators = data.curators || [];
+      if (!curators.length) throw new Error('No curators found. Try different keywords.');
+
+      renderCurators();
+      stat.textContent = curators.length + ' real curators found';
+      document.getElementById('curator-footer').style.display = 'flex';
+
+    } catch(e) {
+      stat.textContent = 'Error: ' + e.message;
+      grid.innerHTML = `<div class="empty-state"><div class="empty-title">${e.message}</div></div>`;
+    }
+    btn.disabled = false;
+  }
+
+  function renderCurators() {
+    const grid = document.getElementById('curator-grid');
+    grid.innerHTML = curators.map((c, i) => {
+      const initials  = (c.name||'??').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      const profileUrl = (c.platform === 'youtube')
+        ? 'https://youtube.com/@' + (c.handle||'').replace('@','')
+        : 'https://instagram.com/' + (c.handle||'').replace('@','');
+
+      return `
+        <div class="curator-card">
+          <div class="curator-top">
+            <div class="curator-avatar">${initials}</div>
+            <div>
+              <div class="curator-name">${c.name}</div>
+              <div class="curator-handle">${c.handle}</div>
+              <div class="curator-meta">${c.platform} &nbsp;·&nbsp; ${c.followers||'unknown'} followers</div>
+            </div>
+          </div>
+          <div class="curator-desc">${c.description}</div>
+          <div class="curator-why">${c.why_relevant}</div>
+          <span class="platform-tag">${c.platform}</span>
+          <div class="curator-actions">
+            <button class="act-btn" onclick="window.open('${profileUrl}','_blank')">Open Profile</button>
+            <button class="act-btn" onclick="toggleDM(${i})">View DM</button>
+            <button class="act-btn primary" onclick="copyDM(${i})">Copy DM</button>
+          </div>
+          <div class="dm-box" id="dm-${i}">
+            <div class="dm-label">Personalised DM Script</div>
+            <div class="dm-text" id="dm-text-${i}">${c.dm_script||''}</div>
+            <div class="dm-actions">
+              <button class="act-btn primary" onclick="copyDM(${i})">Copy to Clipboard</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleDM(i) { document.getElementById('dm-'+i).classList.toggle('open'); }
+
+  function copyDM(i) {
+    const text = document.getElementById('dm-text-'+i)?.textContent || '';
+    navigator.clipboard.writeText(text).then(() => showToast('DM Copied!'));
+  }
+
+  function copyAllDMs() {
+    const all = curators.map((c,i) =>
+      `${c.name} (${c.handle})\n\n${c.dm_script}`
+    ).join('\n\n---\n\n');
+    navigator.clipboard.writeText(all).then(() => showToast('All DMs Copied!'));
+  }
+
+  // ── Chat with Surya ───────────────────────────────────────
+  async function sendChat() {
+    const input = document.getElementById('chat-input');
+    const msg   = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    quickChat(msg);
+  }
+
+  async function quickChat(msg) {
+    appendChatMsg(msg, 'user');
+    chatHistory.push({ role: 'user', content: msg });
+    const typing = appendChatMsg('...', 'agent typing');
+
+    try {
+      const res = await fetch(WORKER + '/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatHistory })
+      });
+      const data  = await res.json();
+      const reply = data.reply || 'Sorry, try again!';
+      typing.remove();
+      appendChatMsg(reply, 'agent');
+      chatHistory.push({ role: 'assistant', content: reply });
+    } catch(e) {
+      typing.remove();
+      appendChatMsg('Connection issue — try again!', 'agent');
+    }
+  }
+
+  function appendChatMsg(text, type) {
+    const msgs = document.getElementById('chat-msgs');
+    const div  = document.createElement('div');
+    const isUser = type === 'user';
+    div.style.cssText = `
+      background: ${isUser ? 'rgba(201,168,76,0.12)' : 'rgba(201,168,76,0.04)'};
+      border: 1px solid rgba(201,168,76,${isUser ? '0.25' : '0.1'});
+      padding: 14px 18px; align-self: ${isUser ? 'flex-end' : 'flex-start'};
+      max-width: 85%;
+    `;
+    div.innerHTML = `<p style="font-family:'Montserrat',sans-serif;font-size:12px;line-height:1.8;color:rgba(255,255,255,0.75);">${text}</p>`;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+    return div;
+  }
+</script>
+</body>
+</html>
