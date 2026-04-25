@@ -6,141 +6,141 @@
 <title>ROSHMUSIK – Born to Resonate</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Rajdhani:wght@300;400;600;700&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet"/>
 <style>
-  :root { --gold:#c9a84c;--gold-light:#e8c97a;--gold-dim:#8a6e2f;--black:#000;--dark:#0a0a0a;--white:#f5f0e8; }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{width:100%;height:100%;background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;scroll-behavior:smooth}
-  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:22px 48px;background:linear-gradient(to bottom,rgba(0,0,0,0.9),transparent);transition:background .4s}
-  nav.scrolled{background:rgba(0,0,0,0.96);backdrop-filter:blur(10px)}
-  .nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;letter-spacing:6px;color:var(--gold);text-decoration:none;text-transform:uppercase}
-  .nav-links{display:flex;gap:36px;list-style:none}
-  .nav-links a{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;transition:color .3s}
-  .nav-links a:hover{color:var(--gold)}
-  .nav-social{display:flex;gap:18px;align-items:center}
-  .nav-social a{color:rgba(255,255,255,0.7);text-decoration:none;transition:color .3s}
-  .nav-social a:hover{color:var(--gold)}
-  .hero{position:relative;width:100%;height:100vh;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
-  .hero-video-wrap{position:absolute;inset:0;z-index:1;overflow:hidden;background:#000}
-  #yt-thumb{transition:opacity 1.5s ease}
-  #yt-player{position:absolute;width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;border:none;display:block;opacity:0;transition:opacity 1s}
-  .hero-overlay{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.3) 40%,rgba(0,0,0,0.5) 100%),linear-gradient(to right,rgba(0,0,0,0.4),transparent 60%)}
-  .hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 30% 60%,rgba(201,168,76,0.10),transparent 60%),linear-gradient(135deg,#000,#0d0d00 60%,#0a0800)}
-  .hero-grain{position:absolute;inset:0;z-index:3;opacity:.035;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
-  .mute-btn{position:absolute;top:90px;right:32px;z-index:10;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid rgba(201,168,76,0.4);color:var(--gold);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;backdrop-filter:blur(6px);opacity:0;animation:fadeIn 2s ease forwards 3s}
-  .mute-btn:hover{background:rgba(201,168,76,0.15);border-color:var(--gold)}
-  .vloader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:12px;transition:opacity .8s}
-  .vloader.hidden{opacity:0;pointer-events:none}
-  .vl-ring{width:36px;height:36px;border:2px solid rgba(201,168,76,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .vl-text{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
-  .orb{position:absolute;border-radius:50%;filter:blur(80px);z-index:2;animation:orbP 6s ease-in-out infinite alternate;pointer-events:none}
-  .orb-1{width:500px;height:500px;background:rgba(201,168,76,0.08);top:0;left:-10%}
-  .orb-2{width:350px;height:350px;background:rgba(201,168,76,0.05);bottom:15%;right:0;animation-delay:2.5s}
-  @keyframes orbP{from{transform:scale(1);opacity:.5}to{transform:scale(1.25);opacity:.9}}
-  .soundwave{position:absolute;bottom:170px;left:50%;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:3px}
-  .wb{width:2px;background:var(--gold);border-radius:2px;animation:wa 1.3s ease-in-out infinite alternate;opacity:.55}
-  .wb:nth-child(1){height:6px;animation-delay:0s}.wb:nth-child(2){height:14px;animation-delay:.1s}.wb:nth-child(3){height:24px;animation-delay:.2s}
-  .wb:nth-child(4){height:34px;animation-delay:.3s}.wb:nth-child(5){height:44px;animation-delay:.15s}.wb:nth-child(6){height:56px;animation-delay:.05s}
-  .wb:nth-child(7){height:44px;animation-delay:.25s}.wb:nth-child(8){height:56px;animation-delay:.35s}.wb:nth-child(9){height:44px;animation-delay:.1s}
-  .wb:nth-child(10){height:30px;animation-delay:.2s}.wb:nth-child(11){height:18px;animation-delay:.3s}.wb:nth-child(12){height:8px;animation-delay:.4s}
-  @keyframes wa{from{transform:scaleY(.3)}to{transform:scaleY(1.5)}}
-  .hero-content{position:relative;z-index:5;text-align:center;padding-bottom:90px;animation:riseUp 1.6s cubic-bezier(.16,1,.3,1) forwards .3s;opacity:0;transform:translateY(40px)}
-  @keyframes riseUp{to{opacity:1;transform:translateY(0)}}
-  .hero-label{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
-  .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,6vw,72px);font-weight:300;letter-spacing:4px;color:var(--white);line-height:1.2;margin-bottom:8px}
-  .hero-sub{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:300;letter-spacing:5px;color:rgba(201,168,76,.65);text-transform:uppercase;margin-bottom:36px}
-  .btn{display:inline-block;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:14px 44px;text-decoration:none;transition:all .3s;position:relative;overflow:hidden;cursor:pointer;border:none}
-  .btn-gold{color:var(--black);background:var(--gold)}
-  .btn-gold::before{content:'';position:absolute;inset:0;background:var(--gold-light);transform:scaleX(0);transform-origin:left;transition:transform .3s}
-  .btn-gold:hover::before{transform:scaleX(1)}
-  .btn-gold span{position:relative;z-index:1}
-  .btn-outline{color:var(--gold);background:transparent;border:1px solid rgba(201,168,76,.5)}
-  .btn-outline:hover{background:rgba(201,168,76,.08);border-color:var(--gold)}
-  .scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:5;opacity:0;animation:fadeIn 2s ease forwards 2s}
-  @keyframes fadeIn{to{opacity:.4}}
-  .scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--gold),transparent);margin:0 auto;animation:sP 2.2s ease-in-out infinite}
-  @keyframes sP{0%,100%{opacity:.3;transform:scaleY(.8)}50%{opacity:1;transform:scaleY(1.2)}}
-  .section{padding:100px 60px;position:relative;overflow:hidden}
-  .section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent)}
-  .section-dark{background:var(--dark)}
-  .section-black{background:var(--black)}
-  .section-eyebrow{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:8px;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:16px}
-  .gold-line{width:60px;height:1px;background:linear-gradient(to right,var(--gold),transparent);margin:0 auto 60px}
-  .tracks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px;max-width:1000px;margin:0 auto 60px}
-  .track-card{position:relative;aspect-ratio:1;background:#0f0f0f;overflow:hidden;cursor:pointer}
-  .track-card-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:80px;color:rgba(201,168,76,.10);font-weight:700;transition:transform .5s}
-  .track-card:hover .track-card-bg{transform:scale(1.1)}
-  .track-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,transparent 65%);display:flex;flex-direction:column;justify-content:flex-end;padding:24px;transition:background .3s}
-  .track-card:hover .track-card-overlay{background:linear-gradient(to top,rgba(201,168,76,.18) 0%,transparent 65%)}
-  .track-lang{font-family:'Rajdhani',sans-serif;font-size:9px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
-  .track-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--white)}
-  .track-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);width:52px;height:52px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .3s;background:rgba(0,0,0,.6)}
-  .track-card:hover .track-play{transform:translate(-50%,-50%) scale(1)}
-  .track-play svg{fill:var(--gold);margin-left:4px}
-  #videos{padding:100px 60px;background:var(--black);position:relative}
-  #videos::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent)}
-  .videos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1100px;margin:0 auto 48px}
-  .vid-card{background:#0f0f0f;overflow:hidden;cursor:pointer;border:1px solid rgba(201,168,76,.08);transition:border-color .3s,transform .3s}
-  .vid-card:hover{border-color:rgba(201,168,76,.3);transform:translateY(-4px)}
-  .vid-thumb-wrap{position:relative;aspect-ratio:16/9;overflow:hidden}
-  .vid-thumb{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
-  .vid-card:hover .vid-thumb{transform:scale(1.05)}
-  .vid-play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:opacity .3s}
-  .vid-card:hover .vid-play-overlay{opacity:1}
-  .vid-play-icon{width:52px;height:52px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
-  .vid-play-icon svg{fill:var(--gold);margin-left:4px}
-  .vid-info{padding:14px 16px}
-  .vid-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--white);margin-bottom:6px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .vid-meta{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(201,168,76,.5);text-transform:uppercase}
-  .vid-loading{text-align:center;padding:60px 20px;grid-column:1/-1}
-  .vid-loading-ring{width:36px;height:36px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 12px}
-  .vid-loading-text{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
-  .vid-error{text-align:center;padding:40px 20px;font-family:'Montserrat',sans-serif;font-size:11px;color:rgba(255,255,255,.3);grid-column:1/-1}
-  .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;max-width:900px;margin:0 auto}
-  .stat-box{padding:40px 30px;text-align:center;background:#0a0a0a}
-  .stat-num{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:8px}
-  .stat-label{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:4px;color:rgba(255,255,255,.4);text-transform:uppercase}
-  .email-form{display:flex;align-items:center;justify-content:center;max-width:440px;margin:0 auto}
-  .email-input{flex:1;background:#111;border:1px solid rgba(201,168,76,.3);border-right:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:2px;padding:15px 20px;outline:none;transition:border-color .3s}
-  .email-input:focus{border-color:var(--gold)}
-  .email-btn{background:var(--gold);border:none;color:var(--black);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:15px 26px;cursor:pointer;transition:background .3s}
-  .email-btn:hover{background:var(--gold-light)}
-  footer{background:var(--black);border-top:1px solid rgba(201,168,76,.12);padding:40px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px}
-  .footer-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;letter-spacing:6px;color:var(--gold);text-transform:uppercase}
-  .footer-tagline{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:4px;color:rgba(255,255,255,.25);text-transform:uppercase;margin-top:4px}
-  .footer-links{display:flex;gap:28px;flex-wrap:wrap;align-items:center}
-  .footer-links a{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);text-decoration:none;transition:color .3s}
-  .footer-links a:hover{color:var(--gold)}
-  .footer-social{display:flex;gap:20px}
-  .footer-social a{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);text-decoration:none;transition:color .3s}
-  .footer-social a:hover{color:var(--gold)}
-  #surya-bubble{position:fixed;bottom:32px;right:32px;z-index:999}
-  .surya-btn{width:58px;height:58px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--black);animation:sping 2.5s ease-in-out infinite;transition:transform .2s}
-  .surya-btn:hover{transform:scale(1.08)}
-  @keyframes sping{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.5)}50%{box-shadow:0 0 0 14px rgba(201,168,76,0)}}
-  .surya-panel{position:absolute;bottom:70px;right:0;width:340px;background:#0d0d0d;border:1px solid rgba(201,168,76,.25);display:none;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.8);border-radius:2px}
-  .surya-panel.open{display:flex;animation:panelIn .3s cubic-bezier(.16,1,.3,1)}
-  @keyframes panelIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
-  .surya-header{padding:16px 20px;border-bottom:1px solid rgba(201,168,76,.15);display:flex;align-items:center;gap:12px}
-  .surya-avatar{width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--black);flex-shrink:0}
-  .surya-name-label{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;color:var(--gold);text-transform:uppercase}
-  .surya-status{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.35);text-transform:uppercase}
-  .surya-msgs{flex:1;min-height:220px;max-height:280px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-  .surya-msgs::-webkit-scrollbar{width:3px}
-  .surya-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3)}
-  .smsg{padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.6;color:rgba(255,255,255,.85);border-radius:2px;max-width:88%}
-  .smsg.agent{background:#181408;border:1px solid rgba(201,168,76,.15);align-self:flex-start}
-  .smsg.user{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);align-self:flex-end;color:var(--white)}
-  .smsg.typing{color:rgba(201,168,76,.6);font-style:italic}
-  .surya-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}
-  .sq-btn{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);background:transparent;border:1px solid rgba(201,168,76,.3);padding:6px 12px;cursor:pointer;transition:all .2s}
-  .sq-btn:hover{background:rgba(201,168,76,.1);border-color:var(--gold)}
-  .surya-input-row{display:flex;border-top:1px solid rgba(201,168,76,.15)}
-  .surya-input{flex:1;background:transparent;border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:11px;padding:14px 16px;outline:none;letter-spacing:1px}
-  .surya-input::placeholder{color:rgba(255,255,255,.2)}
-  .surya-send{background:transparent;border:none;border-left:1px solid rgba(201,168,76,.15);color:var(--gold);font-size:18px;padding:0 18px;cursor:pointer;transition:background .2s}
-  .surya-send:hover{background:rgba(201,168,76,.08)}
-  @media(max-width:768px){nav{padding:18px 20px}.nav-links{display:none}.section{padding:70px 24px}#videos{padding:70px 24px}footer{flex-direction:column;align-items:flex-start;padding:32px 24px}.surya-panel{width:300px;right:-10px}.videos-grid{grid-template-columns:1fr 1fr;gap:10px}}
-  @media(max-width:480px){.videos-grid{grid-template-columns:1fr}}
+:root { --gold:#c9a84c;--gold-light:#e8c97a;--gold-dim:#8a6e2f;--black:#000;--dark:#0a0a0a;--white:#f5f0e8; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:var(--black);color:var(--white);font-family:'Montserrat',sans-serif;overflow-x:hidden;scroll-behavior:smooth}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:22px 48px;background:linear-gradient(to bottom,rgba(0,0,0,0.9),transparent);transition:background .4s}
+nav.scrolled{background:rgba(0,0,0,0.96);backdrop-filter:blur(10px)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;letter-spacing:6px;color:var(--gold);text-decoration:none;text-transform:uppercase}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--white);text-decoration:none;transition:color .3s}
+.nav-links a:hover{color:var(--gold)}
+.nav-social{display:flex;gap:18px;align-items:center}
+.nav-social a{color:rgba(255,255,255,0.7);text-decoration:none;transition:color .3s}
+.nav-social a:hover{color:var(--gold)}
+.hero{position:relative;width:100%;height:100vh;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.hero-video-wrap{position:absolute;inset:0;z-index:1;overflow:hidden;background:#000}
+#yt-thumb{transition:opacity 1.5s ease}
+#yt-player{position:absolute;width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;border:none;display:block;opacity:0;transition:opacity 1s}
+.hero-overlay{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.3) 40%,rgba(0,0,0,0.5) 100%),linear-gradient(to right,rgba(0,0,0,0.4),transparent 60%)}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 30% 60%,rgba(201,168,76,0.10),transparent 60%),linear-gradient(135deg,#000,#0d0d00 60%,#0a0800)}
+.hero-grain{position:absolute;inset:0;z-index:3;opacity:.035;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+.mute-btn{position:absolute;top:90px;right:32px;z-index:10;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid rgba(201,168,76,0.4);color:var(--gold);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;backdrop-filter:blur(6px);opacity:0;animation:fadeIn 2s ease forwards 3s}
+.mute-btn:hover{background:rgba(201,168,76,0.15);border-color:var(--gold)}
+.vloader{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:12px;transition:opacity .8s}
+.vloader.hidden{opacity:0;pointer-events:none}
+.vl-ring{width:36px;height:36px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.vl-text{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);z-index:2;animation:orbP 6s ease-in-out infinite alternate;pointer-events:none}
+.orb-1{width:500px;height:500px;background:rgba(201,168,76,0.08);top:0;left:-10%}
+.orb-2{width:350px;height:350px;background:rgba(201,168,76,0.05);bottom:15%;right:0;animation-delay:2.5s}
+@keyframes orbP{from{transform:scale(1);opacity:.5}to{transform:scale(1.25);opacity:.9}}
+.soundwave{position:absolute;bottom:170px;left:50%;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:3px}
+.wb{width:2px;background:var(--gold);border-radius:2px;animation:wa 1.3s ease-in-out infinite alternate;opacity:.55}
+.wb:nth-child(1){height:6px;animation-delay:0s}.wb:nth-child(2){height:14px;animation-delay:.1s}.wb:nth-child(3){height:24px;animation-delay:.2s}
+.wb:nth-child(4){height:34px;animation-delay:.3s}.wb:nth-child(5){height:44px;animation-delay:.15s}.wb:nth-child(6){height:56px;animation-delay:.05s}
+.wb:nth-child(7){height:44px;animation-delay:.25s}.wb:nth-child(8){height:56px;animation-delay:.35s}.wb:nth-child(9){height:44px;animation-delay:.1s}
+.wb:nth-child(10){height:30px;animation-delay:.2s}.wb:nth-child(11){height:18px;animation-delay:.3s}.wb:nth-child(12){height:8px;animation-delay:.4s}
+@keyframes wa{from{transform:scaleY(.3)}to{transform:scaleY(1.5)}}
+.hero-content{position:relative;z-index:5;text-align:center;padding-bottom:90px;animation:riseUp 1.6s cubic-bezier(.16,1,.3,1) forwards .3s;opacity:0;transform:translateY(40px)}
+@keyframes riseUp{to{opacity:1;transform:translateY(0)}}
+.hero-label{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,6vw,72px);font-weight:300;letter-spacing:4px;color:var(--white);line-height:1.2;margin-bottom:8px}
+.hero-sub{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:300;letter-spacing:5px;color:rgba(201,168,76,.65);text-transform:uppercase;margin-bottom:36px}
+.btn{display:inline-block;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;padding:14px 44px;text-decoration:none;transition:all .3s;position:relative;overflow:hidden;cursor:pointer;border:none}
+.btn-gold{color:var(--black);background:var(--gold)}
+.btn-gold::before{content:'';position:absolute;inset:0;background:var(--gold-light);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.btn-gold:hover::before{transform:scaleX(1)}
+.btn-gold span{position:relative;z-index:1}
+.btn-outline{color:var(--gold);background:transparent;border:1px solid rgba(201,168,76,.5)}
+.btn-outline:hover{background:rgba(201,168,76,.08);border-color:var(--gold)}
+.scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:5;opacity:0;animation:fadeIn 2s ease forwards 2s}
+@keyframes fadeIn{to{opacity:.4}}
+.scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--gold),transparent);margin:0 auto;animation:sP 2.2s ease-in-out infinite}
+@keyframes sP{0%,100%{opacity:.3;transform:scaleY(.8)}50%{opacity:1;transform:scaleY(1.2)}}
+.section{padding:100px 60px;position:relative;overflow:hidden}
+.section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent)}
+.section-dark{background:var(--dark)}
+.section-black{background:var(--black)}
+.section-eyebrow{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:8px;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:16px}
+.gold-line{width:60px;height:1px;background:linear-gradient(to right,var(--gold),transparent);margin:0 auto 60px}
+.tracks-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px;max-width:1000px;margin:0 auto 60px}
+.track-card{position:relative;aspect-ratio:1;background:#0f0f0f;overflow:hidden;cursor:pointer}
+.track-card-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:80px;color:rgba(201,168,76,.10);font-weight:700;transition:transform .5s}
+.track-card:hover .track-card-bg{transform:scale(1.1)}
+.track-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,transparent 65%);display:flex;flex-direction:column;justify-content:flex-end;padding:24px;transition:background .3s}
+.track-card:hover .track-card-overlay{background:linear-gradient(to top,rgba(201,168,76,.18) 0%,transparent 65%)}
+.track-lang{font-family:'Rajdhani',sans-serif;font-size:9px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.track-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--white)}
+.track-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);width:52px;height:52px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .3s;background:rgba(0,0,0,.6)}
+.track-card:hover .track-play{transform:translate(-50%,-50%) scale(1)}
+.track-play svg{fill:var(--gold);margin-left:4px}
+#videos{padding:100px 60px;background:var(--black);position:relative}
+#videos::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent)}
+.videos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;max-width:1100px;margin:0 auto 48px}
+.vid-card{background:#0f0f0f;overflow:hidden;cursor:pointer;border:1px solid rgba(201,168,76,.08);transition:border-color .3s,transform .3s}
+.vid-card:hover{border-color:rgba(201,168,76,.3);transform:translateY(-4px)}
+.vid-thumb-wrap{position:relative;aspect-ratio:16/9;overflow:hidden}
+.vid-thumb{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.vid-card:hover .vid-thumb{transform:scale(1.05)}
+.vid-play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:opacity .3s}
+.vid-card:hover .vid-play-overlay{opacity:1}
+.vid-play-icon{width:52px;height:52px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
+.vid-play-icon svg{fill:var(--gold);margin-left:4px}
+.vid-info{padding:14px 16px}
+.vid-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--white);margin-bottom:6px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vid-meta{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(201,168,76,.5);text-transform:uppercase}
+.vid-loading{text-align:center;padding:60px 20px;grid-column:1/-1}
+.vid-loading-ring{width:36px;height:36px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 12px}
+.vid-loading-text{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
+.vid-error{text-align:center;padding:40px 20px;font-family:'Montserrat',sans-serif;font-size:11px;color:rgba(255,255,255,.3);grid-column:1/-1}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;max-width:900px;margin:0 auto}
+.stat-box{padding:40px 30px;text-align:center;background:#0a0a0a}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:8px;transition:opacity .5s}
+.stat-label{font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:4px;color:rgba(255,255,255,.4);text-transform:uppercase}
+.email-form{display:flex;align-items:center;justify-content:center;max-width:440px;margin:0 auto}
+.email-input{flex:1;background:#111;border:1px solid rgba(201,168,76,.3);border-right:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:2px;padding:15px 20px;outline:none;transition:border-color .3s}
+.email-input:focus{border-color:var(--gold)}
+.email-btn{background:var(--gold);border:none;color:var(--black);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;padding:15px 26px;cursor:pointer;transition:background .3s}
+.email-btn:hover{background:var(--gold-light)}
+footer{background:var(--black);border-top:1px solid rgba(201,168,76,.12);padding:40px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;letter-spacing:6px;color:var(--gold);text-transform:uppercase}
+.footer-tagline{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:4px;color:rgba(255,255,255,.25);text-transform:uppercase;margin-top:4px}
+.footer-links{display:flex;gap:28px;flex-wrap:wrap;align-items:center}
+.footer-links a{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);text-decoration:none;transition:color .3s}
+.footer-links a:hover{color:var(--gold)}
+.footer-social{display:flex;gap:20px}
+.footer-social a{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);text-decoration:none;transition:color .3s}
+.footer-social a:hover{color:var(--gold)}
+#surya-bubble{position:fixed;bottom:32px;right:32px;z-index:999}
+.surya-btn{width:58px;height:58px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--black);animation:sping 2.5s ease-in-out infinite;transition:transform .2s}
+.surya-btn:hover{transform:scale(1.08)}
+@keyframes sping{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.5)}50%{box-shadow:0 0 0 14px rgba(201,168,76,0)}}
+.surya-panel{position:absolute;bottom:70px;right:0;width:340px;background:#0d0d0d;border:1px solid rgba(201,168,76,.25);display:none;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.8);border-radius:2px}
+.surya-panel.open{display:flex;animation:panelIn .3s cubic-bezier(.16,1,.3,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.surya-header{padding:16px 20px;border-bottom:1px solid rgba(201,168,76,.15);display:flex;align-items:center;gap:12px}
+.surya-avatar{width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--black);flex-shrink:0}
+.surya-name-label{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;color:var(--gold);text-transform:uppercase}
+.surya-status{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.35);text-transform:uppercase}
+.surya-msgs{flex:1;min-height:220px;max-height:280px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.surya-msgs::-webkit-scrollbar{width:3px}
+.surya-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3)}
+.smsg{padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:11px;line-height:1.6;color:rgba(255,255,255,.85);border-radius:2px;max-width:88%}
+.smsg.agent{background:#181408;border:1px solid rgba(201,168,76,.15);align-self:flex-start}
+.smsg.user{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);align-self:flex-end;color:var(--white)}
+.smsg.typing{color:rgba(201,168,76,.6);font-style:italic}
+.surya-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}
+.sq-btn{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);background:transparent;border:1px solid rgba(201,168,76,.3);padding:6px 12px;cursor:pointer;transition:all .2s}
+.sq-btn:hover{background:rgba(201,168,76,.1);border-color:var(--gold)}
+.surya-input-row{display:flex;border-top:1px solid rgba(201,168,76,.15)}
+.surya-input{flex:1;background:transparent;border:none;color:var(--white);font-family:'Montserrat',sans-serif;font-size:11px;padding:14px 16px;outline:none;letter-spacing:1px}
+.surya-input::placeholder{color:rgba(255,255,255,.2)}
+.surya-send{background:transparent;border:none;border-left:1px solid rgba(201,168,76,.15);color:var(--gold);font-size:18px;padding:0 18px;cursor:pointer;transition:background .2s}
+.surya-send:hover{background:rgba(201,168,76,.08)}
+@media(max-width:768px){nav{padding:18px 20px}.nav-links{display:none}.section{padding:70px 24px}#videos{padding:70px 24px}footer{flex-direction:column;align-items:flex-start;padding:32px 24px}.surya-panel{width:300px;right:-10px}.videos-grid{grid-template-columns:1fr 1fr;gap:10px}}
+@media(max-width:480px){.videos-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -219,7 +219,8 @@
   <p class="section-eyebrow">By The Numbers</p>
   <div class="gold-line"></div>
   <div class="stats-row">
-    <div class="stat-box"><div class="stat-num">10.4K</div><div class="stat-label">YouTube Subscribers</div></div>
+    <!-- YouTube subscribers updated live via API -->
+    <div class="stat-box"><div class="stat-num" id="stat-subs">—</div><div class="stat-label">YouTube Subscribers</div></div>
     <div class="stat-box"><div class="stat-num">7,965</div><div class="stat-label">Spotify Monthly Listeners</div></div>
     <div class="stat-box"><div class="stat-num">43K+</div><div class="stat-label">Total Streams</div></div>
     <div class="stat-box"><div class="stat-num">1M+</div><div class="stat-label">Instagram Views</div></div>
@@ -275,147 +276,189 @@
 </div>
 
 <script>
-  const YT_CHANNEL_ID = 'UCfT_vYdD_p260pLpU608pCg';
-  const YT_API_KEY    = 'AIzaSyAvQIC6HbfdSOBXR3eitLeiAIjbGcEAGys';
-  const SURYA_PROXY   = 'https://polished-shadow-6284surya-proxy.rosh-musik.workers.dev';
+const YT_CHANNEL_ID = 'UCfT_vYdD_p260pLpU608pCg';
+const YT_API_KEY    = 'AIzaSyAvQIC6HbfdSOBXR3eitLeiAIjbGcEAGys';
+const SURYA_PROXY   = 'https://polished-shadow-6284surya-proxy.rosh-musik.workers.dev';
 
-  window.addEventListener('scroll',()=>{
-    document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>50);
+window.addEventListener('scroll', () => {
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+let isMuted = true, videoLoaded = false;
+
+function loadVideo() {
+  if (videoLoaded) return;
+  videoLoaded = true;
+  const iframe = document.getElementById('yt-player');
+  const thumb  = document.getElementById('yt-thumb');
+  const loader = document.getElementById('vloader');
+  const btn    = document.getElementById('mute-btn');
+  if (!iframe) return;
+  iframe.src = iframe.getAttribute('data-src');
+  iframe.addEventListener('load', () => {
+    iframe.style.opacity = '1';
+    setTimeout(() => {
+      if (thumb)  thumb.style.opacity = '0';
+      if (loader) loader.classList.add('hidden');
+      if (btn)  { btn.style.opacity = '1'; btn.style.animation = 'none'; }
+    }, 1200);
   });
+}
 
-  let isMuted=true, videoLoaded=false;
+['mousemove','touchstart','scroll','keydown','click'].forEach(e => {
+  window.addEventListener(e, loadVideo, { once: true, passive: true });
+});
+setTimeout(loadVideo, 3000);
 
-  function loadVideo(){
-    if(videoLoaded)return; videoLoaded=true;
-    const iframe=document.getElementById('yt-player');
-    const thumb=document.getElementById('yt-thumb');
-    const loader=document.getElementById('vloader');
-    const btn=document.getElementById('mute-btn');
-    if(!iframe)return;
-    iframe.src=iframe.getAttribute('data-src');
-    iframe.addEventListener('load',()=>{
-      iframe.style.opacity='1';
-      setTimeout(()=>{
-        if(thumb)thumb.style.opacity='0';
-        if(loader)loader.classList.add('hidden');
-        if(btn){btn.style.opacity='1';btn.style.animation='none';}
-      },1200);
-    });
+function toggleMute() {
+  const btn    = document.getElementById('mute-btn');
+  const iframe = document.getElementById('yt-player');
+  if (!iframe) return;
+  if (isMuted) {
+    iframe.src = (iframe.src || '').replace('mute=1', 'mute=0');
+    isMuted = false;
+    if (btn) btn.textContent = '🔊';
+  } else {
+    iframe.src = (iframe.src || '').replace('mute=0', 'mute=1');
+    isMuted = true;
+    if (btn) btn.textContent = '🔇';
   }
-  ['mousemove','touchstart','scroll','keydown','click'].forEach(e=>{
-    window.addEventListener(e,loadVideo,{once:true,passive:true});
-  });
-  setTimeout(loadVideo,3000);
+}
 
-  function toggleMute(){
-    const btn=document.getElementById('mute-btn');
-    const iframe=document.getElementById('yt-player');
-    if(!iframe)return;
-    if(isMuted){
-      iframe.src=(iframe.src||'').replace('mute=1','mute=0');
-      isMuted=false; if(btn)btn.textContent='🔊';
-    }else{
-      iframe.src=(iframe.src||'').replace('mute=0','mute=1');
-      isMuted=true; if(btn)btn.textContent='🔇';
+// ── Helpers ──────────────────────────────────────────────
+function formatCount(n) {
+  n = parseInt(n, 10);
+  if (isNaN(n)) return '—';
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1000)    return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return n.toString();
+}
+
+// ── YouTube API Auto-Fetch (live subs + fresh videos) ────
+async function fetchYouTubeVideos() {
+  const grid = document.getElementById('videos-grid');
+  const ts   = '&_t=' + Date.now(); // cache buster — forces fresh API response
+
+  try {
+    // Single call: get both channel statistics (subscribers) and uploads playlist ID
+    const chanRes  = await fetch(
+      `https://www.googleapis.com/youtube/v3/channels?part=contentDetails,statistics&id=${YT_CHANNEL_ID}&key=${YT_API_KEY}${ts}`
+    );
+    const chanData = await chanRes.json();
+    if (chanData.error) throw new Error(chanData.error.message);
+
+    const channel  = chanData.items[0];
+
+    // ── Update subscriber count live ──
+    const subEl = document.getElementById('stat-subs');
+    if (subEl && channel.statistics && channel.statistics.subscriberCount) {
+      subEl.textContent = formatCount(channel.statistics.subscriberCount);
     }
-  }
 
-  // ── YouTube API Auto-Fetch ────────────────────────────────
-  async function fetchYouTubeVideos(){
-    const grid=document.getElementById('videos-grid');
-    try{
-      const chanRes=await fetch(`https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${YT_CHANNEL_ID}&key=${YT_API_KEY}`);
-      const chanData=await chanRes.json();
-      if(chanData.error)throw new Error(chanData.error.message);
-      const playlist=chanData.items[0].contentDetails.relatedPlaylists.uploads;
+    // ── Fetch latest videos from uploads playlist ──
+    const playlist = channel.contentDetails.relatedPlaylists.uploads;
+    const vidRes   = await fetch(
+      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=4&playlistId=${playlist}&key=${YT_API_KEY}${ts}`
+    );
+    const vidData  = await vidRes.json();
+    if (vidData.error) throw new Error(vidData.error.message);
 
-      const vidRes=await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=4&playlistId=${playlist}&key=${YT_API_KEY}`);
-      const vidData=await vidRes.json();
-      if(vidData.error)throw new Error(vidData.error.message);
+    const videos = vidData.items;
+    if (!videos || !videos.length) throw new Error('No videos found');
 
-      const videos=vidData.items;
-      if(!videos||!videos.length)throw new Error('No videos');
-
-      grid.innerHTML=videos.map(item=>{
-        const s=item.snippet;
-        const id=s.resourceId.videoId;
-        const thumb=s.thumbnails?.high?.url||`https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-        const date=new Date(s.publishedAt).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'});
-        return `<div class="vid-card" onclick="window.open('https://www.youtube.com/watch?v=${id}','_blank')">
-          <div class="vid-thumb-wrap">
-            <img class="vid-thumb" src="${thumb}" alt="${s.title}" loading="lazy"/>
-            <div class="vid-play-overlay"><div class="vid-play-icon"><svg width="14" height="16" viewBox="0 0 12 14"><path d="M1 1l10 6L1 13V1z"/></svg></div></div>
-          </div>
-          <div class="vid-info">
-            <div class="vid-title">${s.title}</div>
-            <div class="vid-meta">${date}</div>
-          </div>
-        </div>`;
-      }).join('');
-
-      // Update hero
-      const latest=videos[0].snippet;
-      const latestId=latest.resourceId.videoId;
-      document.getElementById('hero-title').textContent=latest.title;
-      document.getElementById('hero-sub').textContent=latest.channelTitle+' · Latest Upload';
-      const t=document.getElementById('yt-thumb');
-      if(t)t.style.backgroundImage=`url('https://img.youtube.com/vi/${latestId}/maxresdefault.jpg')`;
-      const p=document.getElementById('yt-player');
-      if(p){
-        const src=`https://www.youtube.com/embed/${latestId}?autoplay=1&mute=1&loop=1&playlist=${latestId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&cc_load_policy=0&start=2&enablejsapi=1&origin=https://roshmusik.com`;
-        p.setAttribute('data-src',src);
-        if(videoLoaded)p.src=src;
-      }
-    }catch(err){
-      console.error('YouTube error:',err);
-      grid.innerHTML=`<div class="vid-error">Could not load videos — <a href="https://youtube.com/@Roshmusik" target="_blank" style="color:var(--gold);">visit YouTube</a></div>`;
-    }
-  }
-  fetchYouTubeVideos();
-
-  // ── Surya ─────────────────────────────────────────────────
-  let suryaOpen=false,suryaHistory=[];
-
-  function toggleSurya(){
-    suryaOpen=!suryaOpen;
-    document.getElementById('surya-panel').classList.toggle('open',suryaOpen);
-  }
-
-  async function suryaSend(text){
-    const input=document.getElementById('surya-input');
-    const msg=text||input.value.trim();
-    if(!msg)return;
-    input.value='';
-    document.getElementById('surya-quick').style.display='none';
-    appendMsg(msg,'user');
-    suryaHistory.push({role:'user',content:msg});
-    const typing=appendMsg('Surya is thinking...','agent typing');
-    try{
-      const res=await fetch(SURYA_PROXY+'/chat',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({messages:suryaHistory})
+    grid.innerHTML = videos.map(item => {
+      const s     = item.snippet;
+      const id    = s.resourceId.videoId;
+      const thumb = s.thumbnails?.high?.url || `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+      const date  = new Date(s.publishedAt).toLocaleDateString('en-IN', {
+        year: 'numeric', month: 'short', day: 'numeric'
       });
-      const data=await res.json();
-      const reply=data.reply||'Sorry, try again!';
-      typing.remove();
-      appendMsg(reply,'agent');
-      suryaHistory.push({role:'assistant',content:reply});
-    }catch(e){
-      typing.remove();
-      appendMsg('Connection issue — try again!','agent');
-    }
-  }
+      return `<div class="vid-card" onclick="window.open('https://www.youtube.com/watch?v=${id}','_blank')">
+        <div class="vid-thumb-wrap">
+          <img class="vid-thumb" src="${thumb}" alt="${s.title}" loading="lazy"/>
+          <div class="vid-play-overlay">
+            <div class="vid-play-icon">
+              <svg width="14" height="16" viewBox="0 0 12 14"><path d="M1 1l10 6L1 13V1z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="vid-info">
+          <div class="vid-title">${s.title}</div>
+          <div class="vid-meta">${date}</div>
+        </div>
+      </div>`;
+    }).join('');
 
-  function appendMsg(text,cls){
-    const msgs=document.getElementById('surya-msgs');
-    const div=document.createElement('div');
-    div.className='smsg '+cls;
-    div.textContent=text;
-    msgs.appendChild(div);
-    msgs.scrollTop=msgs.scrollHeight;
-    return div;
+    // ── Update hero with latest video ──
+    const latest   = videos[0].snippet;
+    const latestId = latest.resourceId.videoId;
+    document.getElementById('hero-title').textContent = latest.title;
+    document.getElementById('hero-sub').textContent   = latest.channelTitle + ' · Latest Upload';
+
+    const t = document.getElementById('yt-thumb');
+    if (t) t.style.backgroundImage = `url('https://img.youtube.com/vi/${latestId}/maxresdefault.jpg')`;
+
+    const p = document.getElementById('yt-player');
+    if (p) {
+      const src = `https://www.youtube.com/embed/${latestId}?autoplay=1&mute=1&loop=1&playlist=${latestId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&cc_load_policy=0&start=2&enablejsapi=1&origin=https://roshmusik.com`;
+      p.setAttribute('data-src', src);
+      if (videoLoaded) p.src = src;
+    }
+
+  } catch (err) {
+    console.error('YouTube fetch error:', err);
+    // Show fallback subscriber count if API fails
+    const subEl = document.getElementById('stat-subs');
+    if (subEl && subEl.textContent === '—') subEl.textContent = '10.4K';
+    grid.innerHTML = `<div class="vid-error">Could not load videos — <a href="https://youtube.com/@Roshmusik" target="_blank" style="color:var(--gold);">visit YouTube</a></div>`;
   }
+}
+
+fetchYouTubeVideos();
+
+// ── Surya Chat ────────────────────────────────────────────
+let suryaOpen = false, suryaHistory = [];
+
+function toggleSurya() {
+  suryaOpen = !suryaOpen;
+  document.getElementById('surya-panel').classList.toggle('open', suryaOpen);
+}
+
+async function suryaSend(text) {
+  const input = document.getElementById('surya-input');
+  const msg   = text || input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  document.getElementById('surya-quick').style.display = 'none';
+  appendMsg(msg, 'user');
+  suryaHistory.push({ role: 'user', content: msg });
+  const typing = appendMsg('Surya is thinking...', 'agent typing');
+  try {
+    const res  = await fetch(SURYA_PROXY + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: suryaHistory })
+    });
+    const data  = await res.json();
+    const reply = data.reply || 'Sorry, try again!';
+    typing.remove();
+    appendMsg(reply, 'agent');
+    suryaHistory.push({ role: 'assistant', content: reply });
+  } catch (e) {
+    typing.remove();
+    appendMsg('Connection issue — try again!', 'agent');
+  }
+}
+
+function appendMsg(text, cls) {
+  const msgs = document.getElementById('surya-msgs');
+  const div  = document.createElement('div');
+  div.className   = 'smsg ' + cls;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop  = msgs.scrollHeight;
+  return div;
+}
 </script>
 </body>
 </html>
