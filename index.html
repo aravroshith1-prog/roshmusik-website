@@ -219,7 +219,6 @@ footer{background:var(--black);border-top:1px solid rgba(201,168,76,.12);padding
   <p class="section-eyebrow">By The Numbers</p>
   <div class="gold-line"></div>
   <div class="stats-row">
-    <!-- YouTube subscribers updated live via API -->
     <div class="stat-box"><div class="stat-num" id="stat-subs">—</div><div class="stat-label">YouTube Subscribers</div></div>
     <div class="stat-box"><div class="stat-num">7,965</div><div class="stat-label">Spotify Monthly Listeners</div></div>
     <div class="stat-box"><div class="stat-num">43K+</div><div class="stat-label">Total Streams</div></div>
@@ -278,7 +277,7 @@ footer{background:var(--black);border-top:1px solid rgba(201,168,76,.12);padding
 <script>
 const YT_CHANNEL_ID = 'UCfT_vYdD_p260pLpU608pCg';
 const YT_API_KEY    = 'AIzaSyAvQIC6HbfdSOBXR3eitLeiAIjbGcEAGys';
-const SURYA_PROXY   = 'https://polished-shadow-6284surya-proxy.rosh-musik.workers.dev';
+const SURYA_URL     = 'https://bold-frost-6370.workers.dev';
 
 window.addEventListener('scroll', () => {
   document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 50);
@@ -325,7 +324,6 @@ function toggleMute() {
   }
 }
 
-// ── Helpers ──────────────────────────────────────────────
 function formatCount(n) {
   n = parseInt(n, 10);
   if (isNaN(n)) return '—';
@@ -334,38 +332,28 @@ function formatCount(n) {
   return n.toString();
 }
 
-// ── YouTube API Auto-Fetch (live subs + fresh videos) ────
 async function fetchYouTubeVideos() {
   const grid = document.getElementById('videos-grid');
-  const ts   = '&_t=' + Date.now(); // cache buster — forces fresh API response
-
+  const ts   = '&_t=' + Date.now();
   try {
-    // Single call: get both channel statistics (subscribers) and uploads playlist ID
     const chanRes  = await fetch(
       `https://www.googleapis.com/youtube/v3/channels?part=contentDetails,statistics&id=${YT_CHANNEL_ID}&key=${YT_API_KEY}${ts}`
     );
     const chanData = await chanRes.json();
     if (chanData.error) throw new Error(chanData.error.message);
-
     const channel  = chanData.items[0];
-
-    // ── Update subscriber count live ──
     const subEl = document.getElementById('stat-subs');
     if (subEl && channel.statistics && channel.statistics.subscriberCount) {
       subEl.textContent = formatCount(channel.statistics.subscriberCount);
     }
-
-    // ── Fetch latest videos from uploads playlist ──
     const playlist = channel.contentDetails.relatedPlaylists.uploads;
     const vidRes   = await fetch(
       `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=4&playlistId=${playlist}&key=${YT_API_KEY}${ts}`
     );
     const vidData  = await vidRes.json();
     if (vidData.error) throw new Error(vidData.error.message);
-
     const videos = vidData.items;
     if (!videos || !videos.length) throw new Error('No videos found');
-
     grid.innerHTML = videos.map(item => {
       const s     = item.snippet;
       const id    = s.resourceId.videoId;
@@ -388,26 +376,20 @@ async function fetchYouTubeVideos() {
         </div>
       </div>`;
     }).join('');
-
-    // ── Update hero with latest video ──
     const latest   = videos[0].snippet;
     const latestId = latest.resourceId.videoId;
     document.getElementById('hero-title').textContent = latest.title;
     document.getElementById('hero-sub').textContent   = latest.channelTitle + ' · Latest Upload';
-
     const t = document.getElementById('yt-thumb');
     if (t) t.style.backgroundImage = `url('https://img.youtube.com/vi/${latestId}/maxresdefault.jpg')`;
-
     const p = document.getElementById('yt-player');
     if (p) {
       const src = `https://www.youtube.com/embed/${latestId}?autoplay=1&mute=1&loop=1&playlist=${latestId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&disablekb=1&fs=0&cc_load_policy=0&start=2&enablejsapi=1&origin=https://roshmusik.com`;
       p.setAttribute('data-src', src);
       if (videoLoaded) p.src = src;
     }
-
   } catch (err) {
     console.error('YouTube fetch error:', err);
-    // Show fallback subscriber count if API fails
     const subEl = document.getElementById('stat-subs');
     if (subEl && subEl.textContent === '—') subEl.textContent = '10.4K';
     grid.innerHTML = `<div class="vid-error">Could not load videos — <a href="https://youtube.com/@Roshmusik" target="_blank" style="color:var(--gold);">visit YouTube</a></div>`;
@@ -416,7 +398,7 @@ async function fetchYouTubeVideos() {
 
 fetchYouTubeVideos();
 
-// ── Surya Chat ────────────────────────────────────────────
+// ── Surya Chat ── pointing to bold-frost-6370 Cloudflare Worker ──
 let suryaOpen = false, suryaHistory = [];
 
 function toggleSurya() {
@@ -434,13 +416,18 @@ async function suryaSend(text) {
   suryaHistory.push({ role: 'user', content: msg });
   const typing = appendMsg('Surya is thinking...', 'agent typing');
   try {
-    const res  = await fetch(SURYA_PROXY + '/chat', {
+    // Convert history to Gemini format
+    const geminiMessages = suryaHistory.map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    }));
+    const res  = await fetch(SURYA_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: suryaHistory })
+      body: JSON.stringify({ messages: geminiMessages })
     });
     const data  = await res.json();
-    const reply = data.reply || 'Sorry, try again!';
+    const reply = data.text || 'Sorry, try again!';
     typing.remove();
     appendMsg(reply, 'agent');
     suryaHistory.push({ role: 'assistant', content: reply });
